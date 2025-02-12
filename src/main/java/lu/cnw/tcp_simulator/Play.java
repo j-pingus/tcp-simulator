@@ -29,9 +29,42 @@ public class Play {
     }
 
     public static void main(String[] args) {
-        Play play = new Play(SERVER_PORT, INPUT_DIR);
+        Play play;
+        if (args.length != 2) {
+            play = new Play(SERVER_PORT, INPUT_DIR);
+        }else{
+            play = new Play(Integer.parseInt(args[0]), args[1]);
+        }
         List<FileFrame> frames = play.loadFrames();
+        play.play(frames);
+    }
 
+    private static void replayFrames(OutputStream outputStream, List<FileFrame> frames) throws IOException {
+        if (frames.isEmpty()) return;
+        long startTime = System.currentTimeMillis();
+        long firstFrameTime = frames.get(0).timestamp;
+
+        for (int i = 0; i < frames.size(); i++) {
+            FileFrame frame = frames.get(i);
+            if(frame.event==Event.FRAME) {
+                byte[] data = Files.readAllBytes(Path.of(frame.filename));
+
+                long delay = (frame.timestamp - firstFrameTime) - (System.currentTimeMillis() - startTime);
+                if (delay > 0) {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(delay);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+
+                outputStream.write(data);
+                outputStream.flush();
+            }
+            //TODO: implement the drop"
+        }
+    }
+
+    public void play(List<FileFrame> frames) {
         while (true) {
             try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) {
                 System.out.println("Replay server started on port " + SERVER_PORT);
@@ -51,33 +84,6 @@ public class Play {
                     Thread.sleep(5000);
                 } catch (InterruptedException ignored) {
                 }
-            }
-        }
-    }
-
-    private static void replayFrames(OutputStream outputStream, List<FileFrame> frames) throws IOException {
-        if (frames.isEmpty()) return;
-        long startTime = System.currentTimeMillis();
-        long firstFrameTime = frames.get(0).timestamp;
-
-        for (int i = 0; i < frames.size(); i++) {
-            FileFrame frame = frames.get(i);
-            byte[] data = Files.readAllBytes(Path.of(frame.filename));
-
-            long delay = (frame.timestamp - firstFrameTime) - (System.currentTimeMillis() - startTime);
-            if (delay > 0) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(delay);
-                } catch (InterruptedException ignored) {
-                }
-            }
-
-            outputStream.write(data);
-            outputStream.flush();
-
-            if (Math.random() < 0.1) { // Simulate random connection drops
-                System.out.println("Simulating connection drop.");
-                break;
             }
         }
     }
