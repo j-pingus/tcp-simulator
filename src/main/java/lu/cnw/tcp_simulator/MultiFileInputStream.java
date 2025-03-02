@@ -1,6 +1,9 @@
 package lu.cnw.tcp_simulator;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,7 +55,13 @@ public class MultiFileInputStream extends InputStream {
 
     private void openNextFile() throws IOException {
         if (fileIterator.hasNext()) {
-            currentStream = new FileInputStream(fileIterator.next());
+            var nextFile = fileIterator.next();
+            System.out.println("file: " + nextFile.getName());
+            if (nextFile.exists()) {
+                currentStream = new FileInputStream(nextFile);
+            }else{
+                System.err.println("File " + nextFile + " does not exist");
+            }
         } else {
             currentStream = null; // No more files
         }

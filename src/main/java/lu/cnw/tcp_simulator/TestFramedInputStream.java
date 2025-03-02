@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class TestFramedInputStream {
     public static void main(String[] args) throws IOException {
-        var frames = FrameUtils.loadFrames(new File("received_frames/index.log"));
+        var frames = FrameUtils.loadFrames(new File("CIW-Session2/index.log"));
         var inputStream = new FramedInputStream(
                 new MultiFileInputStream(
                         frames.stream()

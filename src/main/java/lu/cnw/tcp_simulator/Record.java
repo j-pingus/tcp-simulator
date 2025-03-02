@@ -18,6 +18,7 @@ public class Record {
     private final int serverPort;
     private final String serverIp; // Change this to the actual server IP
     private final URI indexFile;
+    private int fileNumber = 0;
 
     public Record(String serverIp, int serverPort, String outputDir) {
         this.outputDir = new File(outputDir);
@@ -47,7 +48,8 @@ public class Record {
 
     private void saveFrame(byte[] data, int length) throws IOException {
         long timestamp = System.currentTimeMillis();
-        String filename = this.outputDir.toString() + "/" + timestamp + ".bin";
+        String suffix = String.format("%010d", fileNumber++);
+        String filename = this.outputDir.toString() + "/" + timestamp + "-" + suffix + ".bin";
 
         try (FileOutputStream fos = new FileOutputStream(filename)) {
             fos.write(data, 0, length);
