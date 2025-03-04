@@ -56,11 +56,8 @@ public class MultiFileInputStream extends InputStream {
     private void openNextFile() throws IOException {
         if (fileIterator.hasNext()) {
             var nextFile = fileIterator.next();
-            System.out.println("file: " + nextFile.getName());
             if (nextFile.exists()) {
                 currentStream = new FileInputStream(nextFile);
-            }else{
-                System.err.println("File " + nextFile + " does not exist");
             }
         } else {
             currentStream = null; // No more files
