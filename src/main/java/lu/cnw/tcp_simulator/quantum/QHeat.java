@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class QHeat extends QuantumMessage{
+public class QHeat extends QuantumMessage {
     @JsonProperty("EvHeader")
     private QEventHeader event;
 
