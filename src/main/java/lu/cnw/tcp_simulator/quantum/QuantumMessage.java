@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = QTime.class, name = "TK"),
         @JsonSubTypes.Type(value = QFs.class, name = "FS"),
         @JsonSubTypes.Type(value = QSl.class, name = "SL"),
-        @JsonSubTypes.Type(value = QRt.class, name = "RT"),
-        @JsonSubTypes.Type(value = QSt.class, name = "ST"),
+        @JsonSubTypes.Type(value = QResetTimer.class, name = "RT"),
+        @JsonSubTypes.Type(value = QStart.class, name = "ST"),
         @JsonSubTypes.Type(value = QPoolTest.class, name = "POOLTEST"),
         @JsonSubTypes.Type(value = QHeatOfficial.class, name = "HO")
 })

@@ -31,7 +31,7 @@ public class Play {
         } else {
             play = new Play(Integer.parseInt(args[0]), args[1]);
         }
-        List<FileFrame> frames = play.loadFrames();
+        List<FileFrame> frames = FrameUtils.loadFrames(play.indexFile);
         play.play(frames);
     }
 
@@ -79,10 +79,6 @@ public class Play {
             } catch (InterruptedException ignored) {
             }
         }
-    }
-
-    private List<FileFrame> loadFrames() {
-        return FrameUtils.loadFrames(indexFile);
     }
 
 }
