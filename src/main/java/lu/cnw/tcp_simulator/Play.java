@@ -42,7 +42,7 @@ public class Play {
 
         for (FileFrame frame : frames) {
             if (frame.event == Event.FRAME) {
-                byte[] data = Files.readAllBytes(Path.of(frame.filename));
+                byte[] data = Files.readAllBytes(Path.of(INPUT_DIR).getParent().resolve(frame.filename));
 
                 long delay = (frame.timestamp - firstFrameTime) - (System.currentTimeMillis() - startTime);
                 if (delay > 0) {
