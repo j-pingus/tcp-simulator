@@ -56,7 +56,7 @@ public class View {
             long delay = frame.timestamp - previousTimestamp;
             String message = frame.filename;
             if (frame.event == Event.FRAME) {
-                byte[] data = Files.readAllBytes(Path.of(frame.filename));
+                byte[] data = Files.readAllBytes(Path.of(INPUT_DIR).getParent().resolve(frame.filename));
 
                 previousTimestamp = frame.timestamp;
                 message = dumpByteArray(data);
