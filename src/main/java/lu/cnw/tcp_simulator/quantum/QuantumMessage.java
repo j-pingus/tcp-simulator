@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "Msg")
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "Msg",
+        visible = true
+)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = QTime.class, name = "TK"),
         @JsonSubTypes.Type(value = QFs.class, name = "FS"),
@@ -16,5 +20,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 public class QuantumMessage {
     @JsonProperty("Msg")
-    public String type;
+    String Msg;
+
 }
