@@ -6,9 +6,18 @@ import java.util.ArrayList;
 
 public class FramedInputStream extends InputStream {
     private final InputStream inputStream;
+    private final byte startFrame;
+    private final byte endFrame;
+    private boolean closed = false;
 
     public FramedInputStream(InputStream inputStream) {
+        this(inputStream, (byte) 0x01, (byte) 0x04);
+    }
+
+    public FramedInputStream(InputStream inputStream, byte startFrame, byte endFrame) {
         this.inputStream = inputStream;
+        this.startFrame = startFrame;
+        this.endFrame = endFrame;
     }
 
     /**
@@ -19,15 +28,16 @@ public class FramedInputStream extends InputStream {
      * @throws IOException if an error occurs during reading.
      */
     public String readFrame() throws IOException {
+        if (closed) return null;
         ArrayList<Byte> buffer = new ArrayList<>();
         boolean inFrame = false;
         int byteRead;
 
         while ((byteRead = inputStream.read()) != -1) {
-            if (byteRead == 0x01) {
+            if (byteRead == startFrame) {
                 // Found start byte: Discard buffer and start a new frame
-                if(!buffer.isEmpty()) {
-                    System.out.println("DISCARDED-"+toString(buffer));
+                if (!buffer.isEmpty()) {
+                    System.err.println("DISCARDED-" + toString(buffer));
                 }
                 buffer.clear();
                 inFrame = true;
@@ -35,18 +45,18 @@ public class FramedInputStream extends InputStream {
             }
 
             if (inFrame) {
-                if (byteRead == 0x04) {
+                if (byteRead == endFrame) {
                     // Found end byte: Return the frame data
                     return toString(buffer);
                 } else {
                     buffer.add((byte) byteRead);
                 }
-            }else{
-                System.out.println("DISCARDED-"+(char)byteRead);
+            } else {
+                System.err.println("DISCARDED-" + (char) byteRead);
             }
         }
-        if(!buffer.isEmpty()) {
-            System.out.println("DISCARDED-"+toString(buffer));
+        if (!buffer.isEmpty()) {
+            System.err.println("DISCARDED-" + toString(buffer));
         }
         return null; // No complete frame found
     }
@@ -59,6 +69,7 @@ public class FramedInputStream extends InputStream {
     @Override
     public void close() throws IOException {
         inputStream.close();
+        closed = true;
     }
 
     private String toString(ArrayList<Byte> buffer) {
