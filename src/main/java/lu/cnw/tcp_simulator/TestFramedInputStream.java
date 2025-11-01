@@ -1,7 +1,7 @@
 package lu.cnw.tcp_simulator;
 
 import lu.cnw.tcp_simulator.quantum.QHeatOfficial;
-import lu.cnw.tcp_simulator.quantum.QSl;
+import lu.cnw.tcp_simulator.quantum.QStartList;
 import lu.cnw.tcp_simulator.quantum.QTime;
 import lu.cnw.tcp_simulator.quantum.QuantumMessage;
 
@@ -19,7 +19,7 @@ public class TestFramedInputStream {
 
             case QHeatOfficial qho ->
                     System.out.println("\nho:" + qho.getEvent().getNumber() + ":" + qho.getHeat().getNumber());
-            case QSl qsl -> System.out.println("sl:" + qsl.getEvent().getNumber() + ":" + qsl.getHeat().getNumber());
+            case QStartList qsl -> System.out.println("sl:" + qsl.getEvent().getNumber() + ":" + qsl.getHeat().getNumber());
             case QTime qTime ->
                     System.out.print("\tqt:" + qTime.getLn() + "/" + qTime.getType() + ":" + qTime.getTime());
             default -> {

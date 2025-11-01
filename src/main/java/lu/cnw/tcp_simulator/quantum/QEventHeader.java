@@ -13,6 +13,8 @@ public class QEventHeader {
     String number;
     @JsonProperty("Round")
     String round;
+    @JsonProperty("RoundID")
+    Integer roundId;
     @JsonProperty("Date")
     String date;
     @JsonProperty("Time")

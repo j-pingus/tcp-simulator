@@ -7,6 +7,8 @@ import lombok.Data;
 public class QHeatHeader {
     @JsonProperty("Number")
     String number;
+    @JsonProperty("HeatID")
+    Integer heatId;
     @JsonProperty("Stat")
     String stat;
 

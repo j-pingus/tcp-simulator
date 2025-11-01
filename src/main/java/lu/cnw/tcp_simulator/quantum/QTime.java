@@ -23,4 +23,12 @@ public class QTime extends QuantumMessage {
     String dist;
     @JsonProperty("LT")
     String lt;
+    @JsonProperty("CurrentRelaySwimmer")
+    String currentRelaySwimmer;
+    @JsonProperty("EventNumber")
+    String eventNumber;
+    @JsonProperty("HeatNumber")
+    String heatNumber;
+    @JsonProperty("HeadID")
+    Long headID;
 }

@@ -11,5 +11,5 @@ public class QRecord {
     @JsonProperty("Time")
     String time;
     @JsonProperty("Splits")
-    List<String> splits;
+    List<List<String>> splits;
 }
