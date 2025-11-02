@@ -8,68 +8,81 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class Play {
     private static final int SERVER_PORT = 12345;
     private static final String INPUT_DIR = "received_frames";
     private final int serverPort;
-    private final File indexFile;
+    private final File inputDir;
+    private final boolean stepper;
 
-    public Play(int serverPort, String inputDir) {
+    public Play(int serverPort, String inputDirName, boolean stepper) {
         this.serverPort = serverPort;
-        this.indexFile = new File(inputDir, "index.log");
-        if (!this.indexFile.exists()) {
+        this.inputDir = new File(inputDirName).getAbsoluteFile();
+        var indexFile = new File(this.inputDir, "index.log");
+        this.stepper = stepper;
+        if (!indexFile.exists()) {
             throw new Error("Index file not found:" + indexFile);
         }
     }
 
     public static void main(String[] args) {
         Play play;
-        if (args.length != 2) {
-            play = new Play(SERVER_PORT, INPUT_DIR);
+        boolean stepper = args.length >= 3 && args[2].equals("stepper");
+        if (args.length < 2) {
+            play = new Play(SERVER_PORT, INPUT_DIR, stepper);
         } else {
-            play = new Play(Integer.parseInt(args[0]), args[1]);
+            play = new Play(Integer.parseInt(args[0]), args[1], stepper);
         }
-        List<FileFrame> frames = FrameUtils.loadFrames(play.indexFile);
+        List<FileFrame> frames = FrameUtils.loadFrames(new File(play.inputDir, "index.log"));
         play.play(frames);
     }
 
-    private static void replayFrames(OutputStream outputStream, List<FileFrame> frames) throws IOException {
+    private static void replayFrames(OutputStream outputStream, File inputDir, List<FileFrame> frames, DelayConsumer consumer) throws IOException {
         if (frames.isEmpty()) return;
         long startTime = System.currentTimeMillis();
         long firstFrameTime = frames.getFirst().timestamp;
 
         for (FileFrame frame : frames) {
             if (frame.event == Event.FRAME) {
-                byte[] data = Files.readAllBytes(Path.of(INPUT_DIR).getParent().resolve(frame.filename));
-
+                byte[] data = Files.readAllBytes(Path.of(inputDir.getParentFile().getAbsolutePath()).resolve(frame.filename));
                 long delay = (frame.timestamp - firstFrameTime) - (System.currentTimeMillis() - startTime);
-                if (delay > 0) {
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(delay);
-                    } catch (InterruptedException ignored) {
-                    }
-                }
-
+                consumer.consume(delay);
                 outputStream.write(data);
                 outputStream.flush();
+                System.out.println("Frame replayed: " + frame.filename);
             }
             //TODO: implement the drop"
         }
     }
 
     public void play(List<FileFrame> frames) {
+
         try (ServerSocket serverSocket = new ServerSocket(this.serverPort)) {
             System.out.println("Replay server started on port " + this.serverPort);
-
+            var scanner = new Scanner(System.in);
             while (true) {
                 try (Socket socket = serverSocket.accept();
                      OutputStream outputStream = socket.getOutputStream()) {
                     System.out.println("Client connected: " + socket.getInetAddress());
-                    replayFrames(outputStream, frames);
+                    if (stepper) {
+                        System.out.println("Type <ENTER> to send next packet");
+                    }
+                    replayFrames(outputStream, this.inputDir, frames, stepper ?
+                            (delay) -> scanner.nextLine() :
+                            (delay) -> {
+                                if (delay > 0) {
+                                    try {
+                                        TimeUnit.MILLISECONDS.sleep(delay);
+                                    } catch (InterruptedException ignored) {
+                                    }
+                                }
+                            });
                 } catch (IOException e) {
                     System.out.println("Connection lost. Waiting for a new client...");
+                    e.printStackTrace();
                 }
             }
         } catch (IOException e) {
@@ -79,6 +92,11 @@ public class Play {
             } catch (InterruptedException ignored) {
             }
         }
+
     }
 
+    @FunctionalInterface
+    interface DelayConsumer {
+        void consume(long delay);
+    }
 }

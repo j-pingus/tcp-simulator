@@ -66,7 +66,7 @@ public class NamePseudonymizer {
             int month = Byte.toUnsignedInt(hash[4]) % 12;
             int day = Byte.toUnsignedInt(hash[5]) % 28;
             int clubIndex = Byte.toUnsignedInt(hash[6]) % LAST_NAMES.size();
-            var name = (male ? MALE_FIRST_NAMES : FEMALE_FIRST_NAMES).get(firstIndex) + " " + LAST_NAMES.get(middleIndex).substring(0, 1) + ". " + LAST_NAMES.get(lastIndex);
+            var name = (male ? MALE_FIRST_NAMES : FEMALE_FIRST_NAMES).get(firstIndex) + " " + LAST_NAMES.get(middleIndex).charAt(0) + ". " + LAST_NAMES.get(lastIndex);
             var birth = String.format("%04d-%02d-%02d", year, month, day);
             var club = "S.C. " + LAST_NAMES.get(clubIndex);
             return new Anonymised(realName.isBlank() ? "" : name, birth, club);

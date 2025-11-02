@@ -1,9 +1,7 @@
 package lu.cnw.tcp_simulator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lu.cnw.tcp_simulator.quantum.QHeat;
 import lu.cnw.tcp_simulator.quantum.QLane;
-import lu.cnw.tcp_simulator.quantum.QLanePresentation;
 import lu.cnw.tcp_simulator.quantum.QuantumMessage;
 
 import java.io.File;
@@ -30,15 +28,16 @@ public class ExportJson {
         FileOutputStream outputStream = new FileOutputStream(file);
         mapper.writeValue(outputStream, o);
     }
-    private void anonymyse(QLane lane){
+
+    private void anonymyse(QLane lane) {
         if (lane != null & lane.getName() != null) {
-            var relay = Optional.ofNullable(lane.getSwimmers()).orElse(new ArrayList<>()).size()>1;
+            var relay = Optional.ofNullable(lane.getSwimmers()).orElse(new ArrayList<>()).size() > 1;
             var anonymysed = namePseudonymizer.pseudonymize(lane.getName(), "M".equals(lane.getCat()));
             var anonymysedClub = namePseudonymizer.pseudonymize(
-                    lane.getClub().isEmpty()?lane.getName():lane.getClub(),
+                    lane.getClub().isEmpty() ? lane.getName() : lane.getClub(),
                     "M".equals(lane.getCat()));
             lane.setName(
-                    relay?anonymysedClub.club():anonymysed.name()
+                    relay ? anonymysedClub.club() : anonymysed.name()
             );
             lane.setScbname(anonymysed.name());
             lane.setClub(anonymysedClub.club());
@@ -54,6 +53,7 @@ public class ExportJson {
         }
 
     }
+
     private QuantumMessage anonymyse(QuantumMessage message) {
         /*if (message instanceof QHeat qHeat) {
             qHeat.getLanes().forEach(this::anonymyse);

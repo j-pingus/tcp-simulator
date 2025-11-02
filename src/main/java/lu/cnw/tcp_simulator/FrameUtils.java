@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 public class FrameUtils {
     public static List<FileFrame> loadFrames(File indexFile) {
+        System.out.println("Loading index file: " + indexFile.getAbsolutePath());
         List<FileFrame> frames = new ArrayList<>();
         try (Scanner scanner = new Scanner(indexFile)) {
             while (scanner.hasNextLine()) {
