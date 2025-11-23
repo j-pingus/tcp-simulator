@@ -12,6 +12,9 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.18.30</lombok.version>
+        <simulator.main.class>lu.cnw.tcp_simulator.Record</simulator.main.class>
+        <simulator.flavour>record</simulator.flavour>
     </properties>
     <dependencies>
         <dependency>
@@ -25,4 +28,44 @@
             <version>1.18.36</version>
         </dependency>
     </dependencies>
+    <build>
+        <finalName>${project.artifactId}-${project.version}-${simulator.flavour}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <!-- Lombok Processor -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>${simulator.main.class}</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>Player</id>
+            <properties>
+                <simulator.main.class>lu.cnw.tcp_simulator.Play</simulator.main.class>
+                <simulator.flavour>player</simulator.flavour>
+            </properties>
+        </profile>
+    </profiles>
 </project>
