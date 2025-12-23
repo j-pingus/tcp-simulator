@@ -31,6 +31,9 @@ public class Play {
     public static void main(String[] args) {
         Play play;
         boolean stepper = args.length >= 3 && args[2].equals("stepper");
+        if (stepper) {
+            System.out.println("When client will connect you will have to hit <ENTER> here to send tcp frames");
+        }
         if (args.length < 2) {
             play = new Play(SERVER_PORT, INPUT_DIR, stepper);
         } else {
